@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  openclaw:
+    build: .
+    container_name: openclaw-agent
+    env_file:
+      - .env
+    volumes:
+      - ./config:/root/.openclaw/config
+      - ./skills:/root/.openclaw/skills
+    restart: unless-stopped

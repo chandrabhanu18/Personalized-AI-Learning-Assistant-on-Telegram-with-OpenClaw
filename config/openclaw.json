@@ -1,0 +1,52 @@
+{
+  "agent": {
+    "name": "personal-learning-assistant",
+    "defaultModel": "ollama:llama3:8b"
+  },
+  "providers": {
+    "llm": {
+      "name": "ollama",
+      "type": "ollama",
+      "config": {
+        "host": "${env.OLLAMA_HOST:-http://host.docker.internal:11434}",
+        "model": "${env.MODEL_NAME:-llama3:8b}"
+      }
+    }
+  },
+  "plugins": {
+    "entries": {
+      "telegram": {
+        "enabled": true,
+        "package": "@openclaw/plugin-telegram",
+        "config": {
+          "botToken": "${env.TELEGRAM_BOT_TOKEN}"
+        }
+      }
+    }
+  },
+  "tools": {
+    "web_search": {
+      "provider": "duckduckgo"
+    }
+  },
+  "automation": {
+    "standingOrders": [
+      {
+        "name": "trigger-user-onboarding",
+        "if": "memory.user_profile_{{user.id}} does not exist",
+        "runSkill": "user-onboarding"
+      }
+    ],
+    "cronJobs": [
+      {
+        "name": "nightly-tech-brief",
+        "cron": "0 21 * * *",
+        "tz": "${env.DEFAULT_TZ:-UTC}",
+        "session": "isolated",
+        "message": "Run the daily-quiz skill for the user and send the formatted brief via Telegram.",
+        "announce": true,
+        "channel": "telegram"
+      }
+    ]
+  }
+}

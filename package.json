@@ -1,0 +1,10 @@
+{
+  "name": "personal-ai-learning-assistant-openclaw",
+  "version": "1.0.0",
+  "private": true,
+  "description": "OpenClaw-based personalized Telegram learning assistant with onboarding, daily quiz generation, and deployment artifacts.",
+  "scripts": {
+    "verify": "node scripts/verify_submission.js",
+    "register-cron": "node scripts/register-user-cron.js"
+  }
+}
