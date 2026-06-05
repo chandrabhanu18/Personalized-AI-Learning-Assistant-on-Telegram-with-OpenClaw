@@ -14,11 +14,15 @@ services:
       - ./skills:/home/openclaw/.openclaw/skills:ro
       - openclaw-data:/home/openclaw/.openclaw/data
     depends_on:
-      - ollama
       - searxng
     restart: unless-stopped
     ports:
       - "8080:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "openclaw status || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
   ollama:
     image: ollama/ollama:latest
@@ -28,6 +32,7 @@ services:
     volumes:
       - ollama-data:/root/.ollama
     restart: unless-stopped
+    profiles: ["optional-ollama"]
 
   searxng:
     image: searxng/searxng:latest
