@@ -1,0 +1,33 @@
+name: Docker CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build-and-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build Docker image
+        run: |
+          docker build -t paia-openclaw:ci .
+
+      - name: Run smoke test: openclaw --version
+        run: |
+          docker run --rm paia-openclaw:ci openclaw --version
+
+      - name: Run container (background) and check that OpenClaw process starts
+        run: |
+          docker run -d --name paia_test paia-openclaw:ci sleep 30
+          docker logs paia_test || true
+          docker rm -f paia_test

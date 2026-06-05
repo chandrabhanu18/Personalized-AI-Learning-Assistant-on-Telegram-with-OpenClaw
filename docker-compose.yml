@@ -2,11 +2,44 @@ version: '3.8'
 
 services:
   openclaw:
-    build: .
+    build:
+      context: .
     container_name: openclaw-agent
     env_file:
       - .env
+    environment:
+      OPENCLAW_CONFIG: /home/openclaw/.openclaw/openclaw.json
+      OPENCLAW_HOME: /home/openclaw/.openclaw
+      HOME: /home/openclaw
     volumes:
-      - ./config:/root/.openclaw/config
-      - ./skills:/root/.openclaw/skills
+      - ./config/openclaw.json:/home/openclaw/.openclaw/openclaw.json:ro
+      - ./skills:/home/openclaw/.openclaw/skills:ro
+      - openclaw-data:/home/openclaw/.openclaw/data
+    depends_on:
+      - ollama
+      - searxng
     restart: unless-stopped
+    ports:
+      - "8080:8080"
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    restart: unless-stopped
+
+  searxng:
+    image: searxng/searxng:latest
+    container_name: searxng
+    environment:
+      - SEARXNG_BASE_URL=http://localhost:8088/
+    ports:
+      - "8088:8080"
+    restart: unless-stopped
+
+volumes:
+  openclaw-data:
+  ollama-data:

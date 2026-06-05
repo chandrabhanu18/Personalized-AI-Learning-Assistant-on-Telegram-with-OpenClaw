@@ -34,7 +34,25 @@ docker compose build
 docker compose up -d
 ```
 
-4. Start or connect Ollama locally if you use the recommended local model.
+If Docker isn't available locally (for example on CI runners or systems without Docker), the repository includes a GitHub Actions workflow that builds and smoke-tests the Docker image on push and pull requests: `.github/workflows/docker-ci.yml`.
+
+Local troubleshooting tips:
+- Ensure Docker Desktop (Windows) or Docker Engine (Linux) is installed and running.
+- On Windows, enable WSL2 integration for best performance.
+- If `docker build` fails with a daemon connection error, start the Docker Desktop application and verify `docker info` returns status.
+
+To run a quick smoke test locally (build and check `openclaw --version`):
+
+```bash
+docker build -t paia-openclaw:local .
+docker run --rm paia-openclaw:local openclaw --version
+```
+
+4. The compose stack starts OpenClaw, Ollama, and SearXNG together. Pull a model into Ollama if needed:
+
+```bash
+docker compose exec ollama ollama pull llama3:8b
+```
 
 5. Send a first message to your Telegram bot to trigger onboarding.
 
